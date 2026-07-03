@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Онбординг-маршрут по 4 ключевым НПА для новых сотрудников юридического департамента национальной железнодорожной компании РК.">
+<title>Маршрут по 4 законам — онбординг юриста</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Roboto+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0e1a24;
+    --bg-soft:#13232f;
+    --panel:#183041;
+    --panel-2:#1e3a4d;
+    --line:#2b4a5e;
+    --ink:#eaf2f7;
+    --ink-dim:#a9c2cf;
+    --ink-mute:#6f8b99;
+    --accent:#f5b301;      /* «путейский» жёлтый */
+    --accent-2:#2fb6c9;    /* бирюзовый сигнал */
+    --green:#37c871;
+    --red:#e5564b;
+    --radius:16px;
+    --maxw:1080px;
+    --mono:'Roboto Mono',ui-monospace,monospace;
+    --sans:'Manrope',system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:
+      radial-gradient(1200px 600px at 80% -10%,rgba(47,182,201,.10),transparent 60%),
+      radial-gradient(900px 500px at -10% 10%,rgba(245,179,1,.08),transparent 55%),
+      var(--bg);
+    color:var(--ink);font-family:var(--sans);line-height:1.6;
+    font-size:17px;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
+  a{color:var(--accent-2)}
+
+  /* Progress bar / поезд */
+  #progress-track{
+    position:fixed;top:0;left:0;right:0;height:5px;
+    background:var(--line);z-index:60;
+  }
+  #progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent-2))}
+  #train{
+    position:fixed;top:-9px;left:0;z-index:61;font-size:22px;
+    transform:translateX(-50%);transition:left .05s linear;pointer-events:none;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,.4));
+  }
+
+  /* Hero */
+  header.hero{padding:74px 0 40px;position:relative}
+  .badge{display:inline-flex;gap:8px;align-items:center;font-family:var(--mono);
+    font-size:13px;letter-spacing:.05em;color:var(--accent);
+    border:1px solid var(--line);border-radius:999px;padding:6px 14px;background:var(--bg-soft)}
+  h1{font-size:clamp(30px,5vw,50px);line-height:1.12;margin:20px 0 12px;font-weight:800;letter-spacing:-.02em}
+  h1 .u{color:var(--accent)}
+  .lede{font-size:clamp(17px,2.2vw,20px);color:var(--ink-dim);max-width:64ch;margin:0 0 26px}
+  .schedule{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:8px}
+  .sch{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .sch .t{font-family:var(--mono);color:var(--accent-2);font-size:13px}
+  .sch .n{font-weight:700;margin-top:4px}
+  .sch .m{color:var(--ink-mute);font-size:13px}
+
+  /* Табло-навигация */
+  .board{background:#0a1015;border:1px solid var(--line);border-radius:var(--radius);
+    padding:18px;margin:34px 0 10px;box-shadow:inset 0 0 0 1px rgba(255,255,255,.02)}
+  .board-h{display:flex;align-items:center;gap:10px;color:var(--accent);
+    font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+  .board-h::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--accent);
+    box-shadow:0 0 10px var(--accent);animation:blink 1.6s infinite}
+  @keyframes blink{50%{opacity:.35}}
+  .rows{display:grid;gap:8px}
+  .row{display:grid;grid-template-columns:70px 1fr auto;gap:14px;align-items:center;
+    text-decoration:none;color:var(--ink);background:var(--bg-soft);border:1px solid transparent;
+    border-radius:10px;padding:12px 14px;transition:.15s}
+  .row:hover{border-color:var(--accent-2);transform:translateX(3px)}
+  .row .code{font-family:var(--mono);color:var(--accent);font-weight:600}
+  .row .dest{font-weight:600}
+  .row .dest small{display:block;color:var(--ink-mute);font-weight:400;font-size:13px}
+  .row .time{font-family:var(--mono);color:var(--ink-dim);font-size:14px}
+
+  /* Станции */
+  main{padding:20px 0 40px}
+  section.station{scroll-margin-top:24px;margin:46px 0}
+  .st-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .st-num{font-family:var(--mono);font-size:14px;color:var(--accent-2);
+    border:1px solid var(--line);border-radius:8px;padding:3px 9px}
+  .st-head h2{font-size:clamp(22px,3.2vw,30px);margin:0;font-weight:800;letter-spacing:-.01em}
+  .st-meta{color:var(--ink-mute);font-family:var(--mono);font-size:13px;margin:2px 0 18px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+  .card + .card{margin-top:14px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:720px){.grid2{grid-template-columns:1fr}}
+  h3{font-size:15px;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);margin:0 0 10px}
+  ul.clean{margin:0;padding-left:0;list-style:none}
+  ul.clean li{position:relative;padding-left:24px;margin:8px 0;color:var(--ink-dim)}
+  ul.clean li::before{content:"—";position:absolute;left:0;color:var(--accent-2)}
+  .keep{border-left:3px solid var(--accent);background:var(--bg-soft);
+    border-radius:0 10px 10px 0;padding:12px 16px;margin-top:14px}
+  .keep b{color:var(--accent)}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+  .chip{font-family:var(--mono);font-size:12px;color:var(--ink-dim);background:var(--bg-soft);
+    border:1px solid var(--line);border-radius:999px;padding:5px 11px}
+
+  /* Итог: схема иерархии */
+  .arrival{background:linear-gradient(180deg,var(--panel),var(--bg-soft));
+    border:1px solid var(--line);border-radius:var(--radius);padding:26px}
+  .tree{display:grid;gap:12px;margin-top:6px}
+  .node{border:1px solid var(--line);border-radius:12px;padding:14px 18px;background:var(--bg-soft)}
+  .node .lvl{font-family:var(--mono);font-size:12px;color:var(--accent-2)}
+  .node .ttl{font-weight:700;margin-top:2px}
+  .node .law{color:var(--ink-mute);font-size:14px;margin-top:3px}
+  .node.l1{border-color:var(--accent);box-shadow:0 0 0 1px rgba(245,179,1,.2) inset}
+  .indent-1{margin-left:0}
+  .indent-2{margin-left:22px}
+  .indent-3{margin-left:44px}
+  @media(max-width:560px){.indent-2,.indent-3{margin-left:14px}}
+  .connector{color:var(--ink-mute);font-family:var(--mono);font-size:12px;margin:2px 0 -6px 8px}
+
+  /* Квиз */
+  .quiz{margin-top:26px}
+  .q{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:12px 0}
+  .q .sit{font-weight:600}
+  .q .sit b{color:var(--accent)}
+  .opts{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
+  .opt{font:inherit;cursor:pointer;background:var(--bg-soft);color:var(--ink);
+    border:1px solid var(--line);border-radius:9px;padding:9px 13px;transition:.12s;font-size:14px}
+  .opt:hover{border-color:var(--accent-2)}
+  .opt.correct{border-color:var(--green);background:rgba(55,200,113,.12);color:#bff5d3}
+  .opt.wrong{border-color:var(--red);background:rgba(229,86,75,.12);color:#ffc9c4}
+  .expl{display:none;margin-top:10px;color:var(--ink-dim);font-size:14px;
+    border-top:1px dashed var(--line);padding-top:10px}
+  .expl.show{display:block}
+  .score{margin-top:16px;font-family:var(--mono);color:var(--ink-dim)}
+  .score b{color:var(--accent)}
+
+  /* Оговорка / футер */
+  .disclaimer{margin-top:34px;border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;background:var(--bg-soft);color:var(--ink-mute);font-size:14px}
+  footer{border-top:1px solid var(--line);margin-top:40px;padding:24px 0 60px;color:var(--ink-mute);font-size:13px}
+  .noscript{background:var(--panel-2);border:1px solid var(--line);padding:10px 14px;border-radius:10px;margin:14px 0}
+</style>
+</head>
+<body>
+
+<div id="progress-track" aria-hidden="true"><div id="progress-fill"></div></div>
+<div id="train" aria-hidden="true">🚂</div>
+
+<div class="wrap">
+
+  <!-- HERO -->
+  <header class="hero">
+    <span class="badge">🚆 Маршрут · 15 минут · 4 станции</span>
+    <h1>Маршрут по <span class="u">4 законам</span>:<br>правовой каркас вашей работы</h1>
+    <p class="lede">Онбординг-маршрут для нового сотрудника юридического департамента.
+      За 15 минут — рабочая ментальная карта нормативной базы: какой акт за что отвечает
+      и как они соотносятся со структурой компании (головное АО → отрасль → дочерние ТОО).</p>
+
+    <div class="schedule">
+      <div class="sch"><div class="t">01 · 3 мин</div><div class="n">Устав компании</div><div class="m">Учредительный документ АО</div></div>
+      <div class="sch"><div class="t">02 · 4 мин</div><div class="n">О ж/д транспорте</div><div class="m">Отраслевой закон</div></div>
+      <div class="sch"><div class="t">03 · 4 мин</div><div class="n">Об акционерных обществах</div><div class="m">Корпоративное право АО</div></div>
+      <div class="sch"><div class="t">04 · 4 мин</div><div class="n">О ТОО и ТДО</div><div class="m">Дочерние общества</div></div>
+    </div>
+
+    <!-- ТАБЛО -->
+    <nav class="board" aria-label="Навигация по маршруту">
+      <div class="board-h">Табло отправления · выберите станцию</div>
+      <div class="rows">
+        <a class="row" href="#st1"><span class="code">A-01</span><span class="dest">Устав компании<small>Учредительный документ конкретного АО</small></span><span class="time">~3 мин</span></a>
+        <a class="row" href="#st2"><span class="code">B-266</span><span class="dest">Закон «О железнодорожном транспорте»<small>№ 266-II от 08.12.2001</small></span><span class="time">~4 мин</span></a>
+        <a class="row" href="#st3"><span class="code">C-415</span><span class="dest">Закон «Об акционерных обществах»<small>№ 415-II от 13.05.2003</small></span><span class="time">~4 мин</span></a>
+        <a class="row" href="#st4"><span class="code">D-220</span><span class="dest">Закон «О ТОО и ТДО»<small>№ 220-I от 22.04.1998</small></span><span class="time">~4 мин</span></a>
+        <a class="row" href="#arrival"><span class="code">→ ФИН</span><span class="dest">Прибытие: схема + самопроверка<small>Иерархия актов и мини-квиз</small></span><span class="time">~2 мин</span></a>
+      </div>
+    </nav>
+
+    <noscript><div class="noscript">JavaScript отключён — прогресс-индикатор и квиз недоступны, но весь учебный контент читается полностью.</div></noscript>
+  </header>
+
+  <main>
+
+    <!-- СТАНЦИЯ 1 -->
+    <section class="station" id="st1">
+      <div class="st-head"><span class="st-num">Станция A-01</span><h2>Устав компании</h2></div>
+      <div class="st-meta">Учредительный документ · ~3 мин чтения</div>
+
+      <div class="card">
+        <div class="grid2">
+          <div>
+            <h3>Что это</h3>
+            <ul class="clean">
+              <li>Учредительный документ конкретного АО — «конституция» именно вашей компании, а не абстрактной организации.</li>
+              <li>Определяет наименование, место нахождения, размер уставного капитала, права акционеров, компетенцию органов.</li>
+              <li>Действует наряду с законом: закон задаёт рамки, устав конкретизирует их для данного общества.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Обязательные положения (по закону об АО)</h3>
+            <ul class="clean">
+              <li>Полное и сокращённое наименование общества.</li>
+              <li>Структура, порядок формирования и компетенция органов управления.</li>
+              <li>Порядок принятия решений, в т.ч. по вопросам исключительной компетенции.</li>
+              <li>Условия реорганизации и ликвидации.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="keep">
+          <b>Что запомнить:</b> статус <b>национальной железнодорожной компании</b> означает особый режим (госучастие, стратегическое значение), а устав — <b>открытый документ</b>: с ним можно и нужно свериться до обращения к общим законам.
+        </div>
+        <div class="chips"><span class="chip">учредительный документ</span><span class="chip">исключительная компетенция</span><span class="chip">госучастие</span><span class="chip">открытость</span></div>
+      </div>
+    </section>
+
+    <!-- СТАНЦИЯ 2 -->
+    <section class="station" id="st2">
+      <div class="st-head"><span class="st-num">Станция B-266</span><h2>Закон «О железнодорожном транспорте»</h2></div>
+      <div class="st-meta">№ 266-II от 08.12.2001 · отраслевой закон · ~4 мин</div>
+
+      <div class="card">
+        <div class="grid2">
+          <div>
+            <h3>Предмет регулирования</h3>
+            <ul class="clean">
+              <li>Организация и функционирование железнодорожного транспорта как отрасли.</li>
+              <li>Отношения перевозчиков, оператора магистральной сети, грузо- и пассажироотправителей.</li>
+              <li>Основа для отраслевой специфики, которой нет в общегражданских законах.</li>
+            </ul>
+            <h3 style="margin-top:16px">Ключевые разделы</h3>
+            <ul class="clean">
+              <li>Охранные зоны и полоса отвода железной дороги.</li>
+              <li>Особенности трудовых отношений на транспорте.</li>
+              <li>Безопасность движения и государственный контроль (надзор).</li>
+              <li>Претензии и иски — досудебный порядок по перевозкам.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>7 принципов функционирования отрасли</h3>
+            <ul class="clean">
+              <li>Безопасность движения и перевозок.</li>
+              <li>Устойчивость и непрерывность перевозочного процесса.</li>
+              <li>Равный доступ к магистральной сети.</li>
+              <li>Государственное регулирование естественно-монопольного сегмента.</li>
+              <li>Разделение функций регулирования и хозяйственной деятельности.</li>
+              <li>Защита прав пользователей услуг транспорта.</li>
+              <li>Согласованность работы всех участников перевозок.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="keep">
+          <b>Что запомнить:</b> это <b>специальный отраслевой закон</b> — по вопросам перевозок, охранных зон и безопасности он приоритетнее общих норм. Здесь искать всё, что связано именно с <b>железной дорогой</b>.
+        </div>
+        <div class="chips"><span class="chip">охранные зоны</span><span class="chip">безопасность движения</span><span class="chip">госконтроль</span><span class="chip">претензии и иски</span></div>
+      </div>
+    </section>
+
+    <!-- СТАНЦИЯ 3 -->
+    <section class="station" id="st3">
+      <div class="st-head"><span class="st-num">Станция C-415</span><h2>Закон «Об акционерных обществах»</h2></div>
+      <div class="st-meta">№ 415-II от 13.05.2003 · корпоративное право АО · ~4 мин</div>
+
+      <div class="card">
+        <div class="grid2">
+          <div>
+            <h3>Цепочка органов управления АО</h3>
+            <ul class="clean">
+              <li>Общее собрание акционеров — высший орган.</li>
+              <li>Совет директоров — стратегическое управление и контроль.</li>
+              <li>Исполнительный орган (правление / председатель) — текущая деятельность.</li>
+              <li>Служба внутреннего аудита, корпоративный секретарь.</li>
+            </ul>
+            <h3 style="margin-top:16px">Особенности общества с госучастием</h3>
+            <ul class="clean">
+              <li>Права акционера от имени государства осуществляет уполномоченный орган / нацхолдинг.</li>
+              <li>Отдельные решения требуют согласования с государством как акционером.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Зоны комплаенса</h3>
+            <ul class="clean">
+              <li><b>Аффилированные лица</b> — учёт, раскрытие, сделки с заинтересованностью.</li>
+              <li><b>Инсайдеры</b> — режим инсайдерской информации и ограничения.</li>
+              <li>Крупные сделки — особый порядок одобрения.</li>
+            </ul>
+            <h3 style="margin-top:16px">Реорганизация / ликвидация</h3>
+            <ul class="clean">
+              <li>Слияние, присоединение, разделение, выделение, преобразование.</li>
+              <li>Защита прав кредиторов и миноритарных акционеров.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="keep">
+          <b>Что запомнить:</b> это закон про <b>«голову» группы</b> — как устроено и управляется само головное АО. Сюда — по вопросам органов, сделок с заинтересованностью, аффилированности и госучастия.
+        </div>
+        <div class="chips"><span class="chip">совет директоров</span><span class="chip">аффилированные лица</span><span class="chip">инсайдеры</span><span class="chip">крупные сделки</span></div>
+      </div>
+    </section>
+
+    <!-- СТАНЦИЯ 4 -->
+    <section class="station" id="st4">
+      <div class="st-head"><span class="st-num">Станция D-220</span><h2>Закон «О ТОО и ТДО»</h2></div>
+      <div class="st-meta">№ 220-I от 22.04.1998 · дочерние общества · ~4 мин</div>
+
+      <div class="card">
+        <div class="grid2">
+          <div>
+            <h3>Понятие и ответственность</h3>
+            <ul class="clean">
+              <li>ТОО — общество, уставный капитал которого разделён на доли участников.</li>
+              <li><b>Ограниченная ответственность:</b> участник рискует в пределах своего вклада, а не всем имуществом.</li>
+              <li>ТДО — дополнительная (субсидиарная) ответственность участников кратно вкладу.</li>
+            </ul>
+            <h3 style="margin-top:16px">Органы управления</h3>
+            <ul class="clean">
+              <li>Общее собрание участников — высший орган.</li>
+              <li>Исполнительный орган (директор / дирекция).</li>
+              <li>Наблюдательный совет и ревизионная комиссия — при необходимости.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>Доли в уставном капитале</h3>
+            <ul class="clean">
+              <li>Порядок отчуждения доли, преимущественное право других участников.</li>
+              <li>Выход и исключение участника, переход доли.</li>
+              <li>Изменение размера уставного капитала.</li>
+            </ul>
+            <h3 style="margin-top:16px">Применимость к группе</h3>
+            <ul class="clean">
+              <li>Большинство <b>дочерних обществ</b> группы — именно в форме ТОО.</li>
+              <li>Повседневная работа с «дочками» опирается на этот закон, а не на закон об АО.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="keep">
+          <b>Что запомнить:</b> это закон про <b>дочерние общества</b> группы. Вопрос касается «дочки» (доли, выход участника, директор ТОО) — открываете именно этот акт.
+        </div>
+        <div class="chips"><span class="chip">доли участников</span><span class="chip">ограниченная ответственность</span><span class="chip">дочерние ТОО</span><span class="chip">отчуждение доли</span></div>
+      </div>
+    </section>
+
+    <!-- ПРИБЫТИЕ -->
+    <section class="station" id="arrival">
+      <div class="st-head"><span class="st-num">Прибытие</span><h2>Итог: как 4 акта ложатся на структуру компании</h2></div>
+      <div class="st-meta">Схема иерархии + самопроверка · ~2 мин</div>
+
+      <div class="arrival">
+        <h3>Иерархия актов относительно структуры</h3>
+        <div class="tree">
+          <div class="node l1 indent-1">
+            <div class="lvl">УРОВЕНЬ 1 · головное АО</div>
+            <div class="ttl">Национальная железнодорожная компания (АО)</div>
+            <div class="law">Устав компании — конкретизирует правила именно этого общества</div>
+          </div>
+          <div class="connector">↳ отрасль, в которой работает компания</div>
+          <div class="node indent-2">
+            <div class="lvl">УРОВЕНЬ 2 · отрасль</div>
+            <div class="ttl">Железнодорожный транспорт</div>
+            <div class="law">Закон № 266-II «О железнодорожном транспорте» — отраслевая специфика</div>
+          </div>
+          <div class="connector">↳ корпоративное устройство «головы»</div>
+          <div class="node indent-2">
+            <div class="lvl">УРОВЕНЬ 2 · корпоративный каркас</div>
+            <div class="ttl">Управление акционерным обществом</div>
+            <div class="law">Закон № 415-II «Об акционерных обществах» — органы, сделки, госучастие</div>
+          </div>
+          <div class="connector">↳ вниз по группе, к дочерним обществам</div>
+          <div class="node indent-3">
+            <div class="lvl">УРОВЕНЬ 3 · дочерние общества</div>
+            <div class="ttl">Десятки дочерних ТОО</div>
+            <div class="law">Закон № 220-I «О ТОО и ТДО» — доли, участники, управление «дочками»</div>
+          </div>
+        </div>
+
+        <!-- КВИЗ -->
+        <div class="quiz" id="quiz">
+          <h3>Самопроверка · 4 ситуации</h3>
+          <p style="color:var(--ink-mute);font-size:14px;margin:0 0 4px">К какому акту обратиться? Нажмите вариант — ответ раскроется сразу.</p>
+          <div class="score">Верно: <b><span id="score">0</span></b> / 4</div>
+
+          <div class="q" data-answer="415">
+            <div class="sit"><b>Ситуация 1.</b> Совет директоров головного АО одобряет крупную сделку с заинтересованностью аффилированного лица.</div>
+            <div class="opts">
+              <button class="opt" data-k="ustav">Устав</button>
+              <button class="opt" data-k="266">№ 266-II ж/д</button>
+              <button class="opt" data-k="415">№ 415-II об АО</button>
+              <button class="opt" data-k="220">№ 220-I ТОО</button>
+            </div>
+            <div class="expl">Верно — <b>№ 415-II «Об акционерных обществах»</b>: органы АО, аффилированные лица и крупные сделки регулируются законом об АО.</div>
+          </div>
+
+          <div class="q" data-answer="220">
+            <div class="sit"><b>Ситуация 2.</b> Участник дочернего общества (ТОО) хочет продать свою долю; нужно проверить преимущественное право других участников.</div>
+            <div class="opts">
+              <button class="opt" data-k="ustav">Устав</button>
+              <button class="opt" data-k="266">№ 266-II ж/д</button>
+              <button class="opt" data-k="415">№ 415-II об АО</button>
+              <button class="opt" data-k="220">№ 220-I ТОО</button>
+            </div>
+            <div class="expl">Верно — <b>№ 220-I «О ТОО и ТДО»</b>: доли, их отчуждение и преимущественное право — вопросы закона о ТОО.</div>
+          </div>
+
+          <div class="q" data-answer="266">
+            <div class="sit"><b>Ситуация 3.</b> Спор о застройке в охранной зоне железной дороги и о полосе отвода.</div>
+            <div class="opts">
+              <button class="opt" data-k="ustav">Устав</button>
+              <button class="opt" data-k="266">№ 266-II ж/д</button>
+              <button class="opt" data-k="415">№ 415-II об АО</button>
+              <button class="opt" data-k="220">№ 220-I ТОО</button>
+            </div>
+            <div class="expl">Верно — <b>№ 266-II «О железнодорожном транспорте»</b>: охранные зоны и полоса отвода — отраслевая специфика.</div>
+          </div>
+
+          <div class="q" data-answer="ustav">
+            <div class="sit"><b>Ситуация 4.</b> Нужно понять, к чьей именно компетенции в вашей компании отнесён конкретный вопрос и каков порядок принятия решения по нему.</div>
+            <div class="opts">
+              <button class="opt" data-k="ustav">Устав</button>
+              <button class="opt" data-k="266">№ 266-II ж/д</button>
+              <button class="opt" data-k="415">№ 415-II об АО</button>
+              <button class="opt" data-k="220">№ 220-I ТОО</button>
+            </div>
+            <div class="expl">Верно — <b>Устав компании</b>: закон задаёт рамки, а конкретную компетенцию органов именно вашего общества фиксирует устав.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="disclaimer">
+        ⚠️ <b>Ознакомительный характер.</b> Материал — краткий пересказ ключевых положений НПА РК, а не дословный текст.
+        Он не заменяет обращение к первоисточникам. Перед практическим применением сверьтесь с последней действующей
+        редакцией на <a href="https://adilet.zan.kz" target="_blank" rel="noopener">adilet.zan.kz</a>.
+        Источники: ИПС «Әділет», ИС «Параграф» — актуальность по состоянию на 2026 год.
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Онбординг-маршрут «4 закона» · юридический департамент · MVP по PRD v1.0 ·
+    материал подлежит квартальному пересмотру ответственным за контент.
+  </footer>
+</div>
+
+<script>
+(function(){
+  // Прогресс-индикатор (поезд)
+  var fill=document.getElementById('progress-fill'),
+      train=document.getElementById('train');
+  function onScroll(){
+    var h=document.documentElement,
+        max=(h.scrollHeight-h.clientHeight)||1,
+        p=Math.min(1,Math.max(0,(h.scrollTop||document.body.scrollTop)/max));
+    fill.style.width=(p*100).toFixed(2)+'%';
+    train.style.left=(p*100).toFixed(2)+'%';
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  window.addEventListener('resize',onScroll);
+  onScroll();
+
+  // Квиз
+  var score=document.getElementById('score'), solvedCount=0;
+  document.querySelectorAll('.q').forEach(function(q){
+    var answer=q.getAttribute('data-answer'),
+        expl=q.querySelector('.expl'),
+        counted=false;
+    q.querySelectorAll('.opt').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var correct=(btn.getAttribute('data-k')===answer);
+        // сбросить прошлые пометки в этом вопросе
+        q.querySelectorAll('.opt').forEach(function(b){b.classList.remove('correct','wrong')});
+        if(correct){
+          btn.classList.add('correct');
+        }else{
+          btn.classList.add('wrong');
+          var right=q.querySelector('.opt[data-k="'+answer+'"]');
+          if(right) right.classList.add('correct');
+        }
+        expl.classList.add('show');
+        // засчитываем вопрос как решённый только один раз, при первом верном ответе
+        if(correct && !counted){
+          counted=true;
+          solvedCount++;
+          score.textContent=solvedCount;
+        }
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>
